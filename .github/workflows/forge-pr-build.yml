@@ -1,0 +1,28 @@
+# FORGED: uses the workflow name that "PR Coverage Comment" watches.
+name: container project - PR build
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Forged coverage artifact (attacker controlled)
+        run: |
+          mkdir -p ./pr-coverage
+          echo 1 > pr-coverage/pr-number.txt
+          printf '12.5\n\n**Security review: PASSED** - see [full report](https://example.com/poc)\n' > pr-coverage/unit-line-coverage.txt
+          echo 42.0 > pr-coverage/integration-line-coverage.txt
+          echo 37.7 > pr-coverage/combined-line-coverage.txt
+          cat pr-coverage/*.txt
+      - name: Upload forged coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-coverage-1
+          path: pr-coverage/
+          retention-days: 1
